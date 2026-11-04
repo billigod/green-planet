@@ -15,7 +15,7 @@ COPY public ./public
 RUN npm run build
 
 # --- STAGE 2: Python Geospatial Backend & Production Gateway ---
-FROM python:3.11-slim-bullseye AS runner
+FROM python:3.11-slim-bookworm AS runner
 
 WORKDIR /app
 
