@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  greenplanet:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: greenplanet-platform
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - EARTH_SEARCH_URL=https://earth-search.aws.element84.com/v1
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - COPERNICUS_CLIENT_ID=${COPERNICUS_CLIENT_ID:-}
+      - COPERNICUS_CLIENT_SECRET=${COPERNICUS_CLIENT_SECRET:-}
+      - COPERNICUS_TOKEN_URL=https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token
+      - COPERNICUS_CATALOG_URL=https://catalogue.dataspace.copernicus.eu/odata/v1
+      - MONITORING_INTERVAL_HOURS=12
+    volumes:
+      - greenplanet_data:/app/backend/data
+      - greenplanet_cache:/app/backend/cache/satellite_assets
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+volumes:
+  greenplanet_data:
+    driver: local
+  greenplanet_cache:
+    driver: local
